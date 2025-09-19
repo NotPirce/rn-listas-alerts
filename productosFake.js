@@ -1,71 +1,61 @@
+// // Esta pantalla muestra una lista de productos usando FlatList
+// // Incluye pull to refresh, paginacion simulada, alertas y toasts
+
 // import React, { useCallback, useMemo, useState } from "react";
 // import {
-//   Alert,
-//   Button,
-//   RefreshControl,
-//   SectionList,
-//   StyleSheet,
-//   Text,
 //   View,
+//   Text,
+//   StyleSheet,
 //   FlatList,
+//   RefreshControl,
+//   Button,
 //   Pressable,
 //   Platform,
+//   Alert,
 // } from "react-native";
 // import Toast from "react-native-toast-message";
 
-// // npx expo install react-native-toast-message
-
+// // Crea un array de 12 posiciones
 // const PRODUCTOS_INICIALES = Array.from({ length: 12 }).map((_, i) => ({
 //   id: `p-${i + 1}`,
 //   nombre: `Producto ${i + 1}`,
 //   precio: 1000 + i * 250,
 // }));
 
-// const SECCIONES = [
-//   {
-//     title: "Bebidas",
-//     data: [
-//       { id: "b-1", nombre: "Agua", precio: 800 },
-//       { id: "b-2", nombre: "Café", precio: 1200 },
-//     ],
-//   },
-//   {
-//     title: "Snacks",
-//     data: [
-//       { id: "s-1", nombre: "Maní", precio: 900 },
-//       { id: "s-2", nombre: "Galletas", precio: 1100 },
-//     ],
-//   },
-// ];
-
-// export default function App() {
-//   const [items, setItems] = useState(PRODUCTOS_INICIALES);
+// export default function ProductosScreen() {
+//   const [items, setItems] = useState(PRODUCTOS_INICIALES); // Productos mostrados por la lista
 //   const [refreshing, setRefreshing] = useState(false);
-//   const [page, setPage] = useState(1);
+//   const [page, setPage] = useState(1); // Lleva la cuenta de paginas para la paginacion simulada
+
+//   const hacerDelete = () => {
+//     //Crea un arreglo con todos los elementos menos el ultimo y lo guarda en el estado
+//     setItems((prev) => prev.slice(0, -1));
+//     Toast.show({
+//       type: "success",
+//       text1: "Eliminado",
+//       text2: "Se eliminó el último elemento",
+//     });
+//   };
 
 //   const mostrarAlertaEliminar = () => {
+//     if (Platform.OS === "web") {
+//       const ok = window.confirm("¿Seguro que deseas eliminar el último ítem?");
+//       if (ok) hacerDelete();
+//       return;
+//     }
+
 //     Alert.alert(
 //       "Eliminar",
 //       "¿Seguro que deseas eliminar el último ítem?",
 //       [
 //         { text: "Cancelar", style: "cancel" },
-//         {
-//           text: "Eliminar",
-//           style: "destructive",
-//           onPress: () => {
-//             setItems((prev) => prev.slice(0, -1));
-//             Toast.show({
-//               type: "success",
-//               text1: "Eliminado",
-//               text2: "Se eliminó el último elemento",
-//             });
-//           },
-//         },
+//         { text: "Eliminar", style: "destructive", onPress: hacerDelete },
 //       ],
 //       { cancelable: true }
 //     );
 //   };
 
+//   // Simple toast informativo que muestra la plataforma actual
 //   const mostrarToastInfo = () => {
 //     Toast.show({
 //       type: "info",
@@ -74,6 +64,7 @@
 //     });
 //   };
 
+//   // Simula recargar datos
 //   const onRefresh = useCallback(() => {
 //     setRefreshing(true);
 //     setTimeout(() => {
@@ -85,13 +76,14 @@
 //         text1: "Actualizado",
 //         text2: "Datos refrescados",
 //       });
-//     }, 900);
+//     }, 1200);
 //   }, []);
 
+//   // Genera items nuevos cuando el usuario llega al final
 //   const loadMore = useCallback(() => {
 //     const nextPage = page + 1;
 //     const start = items.length;
-//     const extra = Array.from({ length: 6 }).map((_, i) => ({
+//     const extra = Array.from({ length: 1 }).map((_, i) => ({
 //       id: `p-${start + i + 1}`,
 //       nombre: `Producto ${start + i + 1}`,
 //       precio: 1000 + (start + i) * 250,
@@ -105,6 +97,8 @@
 //     });
 //   }, [items.length, page]);
 
+//   //Esto lo que hace es que al tocar un item se muestra un toast con info del producto
+//   // Aqui se define como se ve cada item de la lista
 //   const renderItem = useCallback(({ item }) => {
 //     return (
 //       <Pressable
@@ -123,9 +117,13 @@
 //     );
 //   }, []);
 
+//   // Dice a la flatList cual es la clave unica de cada fila
+//   // Da una clave unica por fila
 //   const keyExtractor = useCallback((item) => item.id, []);
-
 //   const ITEM_HEIGHT = 72;
+
+//   // Calcula la posicion de cada item para optimizar el scroll
+//   // Optimiza el scroll
 //   const getItemLayout = useCallback(
 //     (_data, index) => ({
 //       length: ITEM_HEIGHT,
@@ -135,75 +133,50 @@
 //     []
 //   );
 
-//   const seccionesMemo = useMemo(() => SECCIONES, []);
+//   // Header de la lista con botones de accion
+//   const header = useMemo(
+//     () => (
+//       <View style={{ paddingHorizontal: 12, paddingTop: 12, gap: 8 }}>
+//         <Text style={styles.title}>FlatList — Productos</Text>
+//         <View style={styles.row}>
+//           <Button title="Alert (Eliminar)" onPress={mostrarAlertaEliminar} />
+//           <View style={{ width: 12 }} />
+//           <Button
+//             title="Toast informacion sobre plataforma"
+//             onPress={mostrarToastInfo}
+//           />
+//         </View>
+//       </View>
+//     ),
+//     [mostrarToastInfo]
+//   );
 
 //   return (
+//     // Aqui el flalist recibe todo lo necesario para renderizar la lista
 //     <View style={styles.container}>
-//       <Text style={styles.title}>FlatList — Productos</Text>
-
-//       <View style={styles.row}>
-//         <Button title="Alert (Eliminar)" onPress={mostrarAlertaEliminar} />
-//         <View style={{ width: 12 }} />
-//         <Button title="Toast Info" onPress={mostrarToastInfo} />
-//       </View>
-
 //       <FlatList
 //         data={items}
 //         renderItem={renderItem}
 //         keyExtractor={keyExtractor}
+//         ListHeaderComponent={header}
 //         ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-//         contentContainerStyle={{ padding: 12 }}
+//         contentContainerStyle={{ padding: 12, paddingTop: 0 }}
 //         refreshControl={
 //           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 //         }
 //         onEndReached={loadMore}
 //         onEndReachedThreshold={0.2}
 //         getItemLayout={getItemLayout}
-//         style={{ flexGrow: 0, maxHeight: 320 }}
+//         style={{ flexGrow: 1 }}
 //       />
-
-//       <Text style={styles.title}>SectionList — Por categoría</Text>
-
-//       <SectionList
-//         sections={seccionesMemo}
-//         keyExtractor={(item) => item.id}
-//         renderItem={({ item }) => (
-//           <View style={styles.card}>
-//             <Text style={styles.cardTitle}>{item.nombre}</Text>
-//             <Text style={styles.cardPrice}>₡{item.precio}</Text>
-//           </View>
-//         )}
-//         renderSectionHeader={({ section: { title } }) => (
-//           <View style={styles.sectionHeader}>
-//             <Text style={styles.sectionTitle}>{title}</Text>
-//           </View>
-//         )}
-//         ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
-//         SectionSeparatorComponent={() => <View style={{ height: 12 }} />}
-//         contentContainerStyle={{ padding: 12, paddingBottom: 24 }}
-//       />
-
-//       <Toast />
 //     </View>
 //   );
 // }
 
 // const styles = StyleSheet.create({
-//   container: { flex: 1, backgroundColor: "#f6f9fc", paddingTop: 48 },
-//   title: {
-//     fontSize: 18,
-//     fontWeight: "700",
-//     marginHorizontal: 12,
-//     marginTop: 12,
-//     marginBottom: 8,
-//     color: "#0f172a",
-//   },
-//   row: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     paddingHorizontal: 12,
-//     marginBottom: 12,
-//   },
+//   container: { flex: 1, backgroundColor: "#f6f9fc" },
+//   title: { fontSize: 18, fontWeight: "700", color: "#0f172a" },
+//   row: { flexDirection: "row", alignItems: "center", marginBottom: 12 },
 //   card: {
 //     backgroundColor: "#ffffff",
 //     padding: 12,
@@ -215,6 +188,4 @@
 //   },
 //   cardTitle: { fontSize: 16, fontWeight: "600", color: "#111827" },
 //   cardPrice: { fontSize: 14, fontWeight: "500", color: "#64748b" },
-//   sectionHeader: { backgroundColor: "#eaf6ff", padding: 8, borderRadius: 8 },
-//   sectionTitle: { fontSize: 14, fontWeight: "700", color: "#0f172a" },
 // });

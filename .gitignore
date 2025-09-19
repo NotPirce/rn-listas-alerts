@@ -1,5 +1,9 @@
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
+#useMemo para que no se cree una nueva referencia en cada render
+
+# npx expo install react-native-toast-message
+
 # dependencies
 node_modules/
 

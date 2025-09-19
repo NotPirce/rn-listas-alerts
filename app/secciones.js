@@ -17,13 +17,6 @@ const SECCIONES = [
       { id: "s-2", nombre: "Galletas", precio: 1100 },
     ],
   },
-  {
-    title: "PCs ",
-    data: [
-      { id: "t-1", nombre: "Tarjeta grafica", precio: 900 },
-      { id: "t-2", nombre: "CPU", precio: 1900 },
-    ],
-  },
 ];
 
 export default function SeccionesScreen() {

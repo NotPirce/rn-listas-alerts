@@ -1,3 +1,6 @@
+// Esta pantalla muestra una lista de productos usando FlatList
+// Incluye pull to refresh, paginacion simulada, alertas y toasts
+
 import React, { useCallback, useMemo, useState } from "react";
 import {
   View,
@@ -12,18 +15,40 @@ import {
 } from "react-native";
 import Toast from "react-native-toast-message";
 
-const PRODUCTOS_INICIALES = Array.from({ length: 12 }).map((_, i) => ({
-  id: `p-${i + 1}`,
-  nombre: `Producto ${i + 1}`,
-  precio: 1000 + i * 250,
-}));
+
+const Nombres = [
+  "Café molido",
+  "Té verde",
+  "Agua mineral",
+  "Refresco cola",
+  "Jugo de naranja",
+  "Leche descremada",
+  "Pan integral",
+  "Galletas de avena",
+  "Maní salado",
+  "Chips de papa",
+  "Chocolate negro",
+  "Yogur natural",
+];
+
+const makeProductos = (idx) => ({
+  id: `p-${idx + 1}`,
+  nombre: Nombres[idx % Nombres.length], // Hace que los nombres se repitan en ciclo si se pasa de 12
+  precio: 1000 + idx * 250,
+});
+
+// Crea un array de 12 posiciones
+const PRODUCTOS_INICIALES = Array.from({ length: 12 }).map((_, i) =>
+  makeProductos(i)
+);
 
 export default function ProductosScreen() {
-  const [items, setItems] = useState(PRODUCTOS_INICIALES); // PRoductos mostrados por la lista
+  const [items, setItems] = useState(PRODUCTOS_INICIALES); // Productos mostrados por la lista
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1); // Lleva la cuenta de paginas para la paginacion simulada
 
   const hacerDelete = () => {
+    //Crea un arreglo con todos los elementos menos el ultimo y lo guarda en el estado
     setItems((prev) => prev.slice(0, -1));
     Toast.show({
       type: "success",
@@ -71,18 +96,16 @@ export default function ProductosScreen() {
         text1: "Actualizado",
         text2: "Datos refrescados",
       });
-    }, 800);
+    }, 1200);
   }, []);
 
   // Genera items nuevos cuando el usuario llega al final
   const loadMore = useCallback(() => {
     const nextPage = page + 1;
     const start = items.length;
-    const extra = Array.from({ length: 1 }).map((_, i) => ({
-      id: `p-${start + i + 1}`,
-      nombre: `Producto ${start + i + 1}`,
-      precio: 1000 + (start + i) * 250,
-    }));
+    const extra = Array.from({ length: 3 }).map((_, i) =>
+      makeProductos(start + i)
+    );
     setItems((prev) => [...prev, ...extra]);
     setPage(nextPage);
     Toast.show({
@@ -93,6 +116,7 @@ export default function ProductosScreen() {
   }, [items.length, page]);
 
   //Esto lo que hace es que al tocar un item se muestra un toast con info del producto
+  // Aqui se define como se ve cada item de la lista
   const renderItem = useCallback(({ item }) => {
     return (
       <Pressable
@@ -111,8 +135,13 @@ export default function ProductosScreen() {
     );
   }, []);
 
+  // Dice a la flatList cual es la clave unica de cada fila
+  // Da una clave unica por fila
   const keyExtractor = useCallback((item) => item.id, []);
   const ITEM_HEIGHT = 72;
+
+  // Calcula la posicion de cada item para optimizar el scroll
+  // Optimiza el scroll
   const getItemLayout = useCallback(
     (_data, index) => ({
       length: ITEM_HEIGHT,
@@ -130,7 +159,7 @@ export default function ProductosScreen() {
         <View style={styles.row}>
           <Button title="Alert (Eliminar)" onPress={mostrarAlertaEliminar} />
           <View style={{ width: 12 }} />
-          <Button title="Toast Info" onPress={mostrarToastInfo} />
+          <Button title="Toast sobre plataforma" onPress={mostrarToastInfo} />
         </View>
       </View>
     ),
@@ -138,6 +167,7 @@ export default function ProductosScreen() {
   );
 
   return (
+    // Aqui el flalist recibe todo lo necesario para renderizar la lista
     <View style={styles.container}>
       <FlatList
         data={items}

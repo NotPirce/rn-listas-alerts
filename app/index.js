@@ -5,7 +5,7 @@ import { View, Text, StyleSheet } from "react-native";
 export default function Home() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Demo: Listas & Alert/Toast</Text>
+      <Text style={styles.title}>Listas & Alert/Toast</Text>
 
       {/*Enlaces a las pantallas de productos y secciones*/}
       <Link href="/productos" style={styles.link}>

@@ -18,7 +18,7 @@ export default function RootLayout() {
         }}
       />
 
-        {/*Monta el contenedor global de toast una sola vez*/}
+      {/*Monta el contenedor global de toast una sola vez*/}
       <Toast />
       <StatusBar style="dark" />
     </SafeAreaView>

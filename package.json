@@ -27,7 +27,7 @@
     ],
     "extra": {
       "router": {
-        "appRoot": "components"
+        "appRoot": "app"
       }
     }
   }
