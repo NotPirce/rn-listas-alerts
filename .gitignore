@@ -2,6 +2,7 @@
 
 #useMemo para que no se cree una nueva referencia en cada render
 
+#Necesario para usar toast
 # npx expo install react-native-toast-message
 
 # dependencies
